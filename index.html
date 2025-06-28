@@ -48,7 +48,9 @@
   </div>
 
   <script>
-    // Submit form
+    const BASE_URL = "https://mep-api-7pph.onrender.com";
+
+    // Submit recipe
     document.getElementById('recipe-form').addEventListener('submit', async function (e) {
       e.preventDefault();
       const recipe = {
@@ -58,14 +60,14 @@
       };
 
       try {
-        const res = await fetch('/api/recipes', {
+        const res = await fetch(`${BASE_URL}/api/recipes`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(recipe)
         });
         if (res.ok) {
           document.getElementById('recipe-form').reset();
-          loadRecipes(); // Reload list after submission
+          loadRecipes();
         } else {
           alert('Error saving recipe.');
         }
@@ -74,13 +76,32 @@
       }
     });
 
+    // Delete recipe
+    function deleteRecipe(id) {
+      if (!confirm('Delete this recipe?')) return;
+
+      fetch(`${BASE_URL}/api/recipes/${id}`, { method: 'DELETE' })
+        .then(res => {
+          if (res.ok) {
+            loadRecipes();
+          } else {
+            alert('Failed to delete recipe.');
+          }
+        })
+        .catch(err => {
+          console.error('Delete error:', err);
+          alert('Error deleting recipe.');
+        });
+    }
+
     // Load recipes
     function loadRecipes() {
-      fetch('/api/recipes')
+      fetch(`${BASE_URL}/api/recipes`)
         .then(res => res.json())
         .then(data => {
           const container = document.getElementById('recipe-list');
           container.innerHTML = "<h2 class='text-xl font-bold mb-2 text-center'>📖 Saved Recipes</h2>";
+
           if (!data.length) {
             container.innerHTML += "<p class='text-gray-500 text-center'>No recipes saved yet.</p>";
             return;
@@ -90,7 +111,13 @@
             const steps = recipe.steps?.join(', ') || 'No steps';
             container.innerHTML += `
               <div class="bg-white p-4 rounded-lg shadow border">
-                <h3 class="text-lg font-semibold">${recipe.recipeName}</h3>
+                <div class="flex justify-between items-center">
+                  <h3 class="text-lg font-semibold">${recipe.recipeName}</h3>
+                  <button 
+                    onclick="deleteRecipe('${recipe._id}')" 
+                    class="text-red-500 text-sm hover:underline"
+                  >Delete</button>
+                </div>
                 <p class="text-sm text-gray-600"><strong>Station:</strong> ${recipe.station || 'N/A'}</p>
                 <p class="text-sm mt-1"><strong>Steps:</strong> ${steps}</p>
               </div>
@@ -99,7 +126,7 @@
         })
         .catch(err => {
           document.getElementById('recipe-list').innerHTML +=
-            "<p class='text-red-500'>Error loading recipes.</p>";
+            "<p class='text-red-500 text-center'>Error loading recipes.</p>";
           console.error('Load error:', err);
         });
     }
