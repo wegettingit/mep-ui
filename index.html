@@ -6,8 +6,8 @@
   <title>MEP</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen font-sans">
-  <div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-md">
+<body class="bg-gray-100 flex flex-col items-center justify-start min-h-screen font-sans p-4">
+  <div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-md mb-10">
     <h1 class="text-2xl font-bold mb-6 text-center flex items-center justify-center gap-2">
       <span>📋</span> MEP: Add Recipe
     </h1>
@@ -41,5 +41,70 @@
       </button>
     </form>
   </div>
+
+  <div id="recipe-list" class="w-full max-w-2xl space-y-6">
+    <h2 class="text-xl font-bold mb-2 text-center">📖 Saved Recipes</h2>
+    <!-- Recipes will load here -->
+  </div>
+
+  <script>
+    // Submit form
+    document.getElementById('recipe-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const recipe = {
+        recipeName: document.getElementById('recipeName').value,
+        steps: document.getElementById('steps').value.split(',').map(s => s.trim()),
+        station: document.getElementById('station').value
+      };
+
+      try {
+        const res = await fetch('/api/recipes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(recipe)
+        });
+        if (res.ok) {
+          document.getElementById('recipe-form').reset();
+          loadRecipes(); // Reload list after submission
+        } else {
+          alert('Error saving recipe.');
+        }
+      } catch (err) {
+        console.error('Submission failed:', err);
+      }
+    });
+
+    // Load recipes
+    function loadRecipes() {
+      fetch('/api/recipes')
+        .then(res => res.json())
+        .then(data => {
+          const container = document.getElementById('recipe-list');
+          container.innerHTML = "<h2 class='text-xl font-bold mb-2 text-center'>📖 Saved Recipes</h2>";
+          if (!data.length) {
+            container.innerHTML += "<p class='text-gray-500 text-center'>No recipes saved yet.</p>";
+            return;
+          }
+
+          data.forEach(recipe => {
+            const steps = recipe.steps?.join(', ') || 'No steps';
+            container.innerHTML += `
+              <div class="bg-white p-4 rounded-lg shadow border">
+                <h3 class="text-lg font-semibold">${recipe.recipeName}</h3>
+                <p class="text-sm text-gray-600"><strong>Station:</strong> ${recipe.station || 'N/A'}</p>
+                <p class="text-sm mt-1"><strong>Steps:</strong> ${steps}</p>
+              </div>
+            `;
+          });
+        })
+        .catch(err => {
+          document.getElementById('recipe-list').innerHTML +=
+            "<p class='text-red-500'>Error loading recipes.</p>";
+          console.error('Load error:', err);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadRecipes);
+  </script>
 </body>
 </html>
