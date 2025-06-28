@@ -60,7 +60,7 @@
       };
 
       try {
-        const res = await fetch(`${BASE_URL}/api/recipes`, {
+        const res = await fetch(`${BASE_URL}/recipes`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(recipe)
@@ -80,7 +80,7 @@
     function deleteRecipe(id) {
       if (!confirm('Delete this recipe?')) return;
 
-      fetch(`${BASE_URL}/api/recipes/${id}`, { method: 'DELETE' })
+      fetch(`${BASE_URL}/recipes/${id}`, { method: 'DELETE' })
         .then(res => {
           if (res.ok) {
             loadRecipes();
@@ -96,7 +96,7 @@
 
     // Load recipes
     function loadRecipes() {
-      fetch(`${BASE_URL}/api/recipes`)
+      fetch(`${BASE_URL}/recipes`)
         .then(res => res.json())
         .then(data => {
           const container = document.getElementById('recipe-list');
