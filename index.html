@@ -11,6 +11,7 @@
     <h1 class="text-2xl font-bold mb-6 text-center flex items-center justify-center gap-2">
       <span>📋</span> MEP: Add Recipe
     </h1>
+
     <form id="recipe-form" class="space-y-4">
       <input
         type="text"
@@ -21,9 +22,9 @@
       />
       <textarea
         id="steps"
-        placeholder="Steps (comma-separated)"
+        placeholder="Steps (one per line)"
         required
-        rows="3"
+        rows="5"
         class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
       ></textarea>
       <input
@@ -54,8 +55,11 @@
     document.getElementById('recipe-form').addEventListener('submit', async function (e) {
       e.preventDefault();
       const recipe = {
-        recipeName: document.getElementById('recipeName').value,
-        steps: document.getElementById('steps').value.split(',').map(s => s.trim()),
+        name: document.getElementById('recipeName').value,
+        steps: document.getElementById('steps').value
+          .split('\n')
+          .map(s => s.trim())
+          .filter(Boolean),
         station: document.getElementById('station').value
       };
 
@@ -108,18 +112,22 @@
           }
 
           data.forEach(recipe => {
-            const steps = recipe.steps?.join(', ') || 'No steps';
             container.innerHTML += `
               <div class="bg-white p-4 rounded-lg shadow border">
-                <div class="flex justify-between items-center">
-                  <h3 class="text-lg font-semibold">${recipe.recipeName}</h3>
+                <div class="flex justify-between items-center mb-2">
+                  <h3 class="text-lg font-semibold">${recipe.name}</h3>
                   <button 
                     onclick="deleteRecipe('${recipe._id}')" 
                     class="text-red-500 text-sm hover:underline"
                   >Delete</button>
                 </div>
                 <p class="text-sm text-gray-600"><strong>Station:</strong> ${recipe.station || 'N/A'}</p>
-                <p class="text-sm mt-1"><strong>Steps:</strong> ${steps}</p>
+                <div class="text-sm mt-2">
+                  <strong>Steps:</strong>
+                  <ul class="list-disc list-inside text-gray-700 mt-1">
+                    ${recipe.steps.map(step => `<li>${step}</li>`).join('')}
+                  </ul>
+                </div>
               </div>
             `;
           });
