@@ -1,19 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MEP</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            darkbg: '#1e293b',
+            darksurface: '#334155',
+            darktext: '#e2e8f0',
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="bg-gray-100 flex flex-col items-center justify-start min-h-screen font-sans p-4">
+<body class="bg-darkbg text-darktext flex flex-col items-center justify-start min-h-screen font-sans p-4">
 
   <!-- 🔐 Login Box -->
-  <div id="login-box" class="bg-white shadow-lg rounded-xl p-6 w-full max-w-md mb-6">
+  <div id="login-box" class="bg-darksurface shadow-lg rounded-xl p-6 w-full max-w-md mb-6">
     <h2 class="text-xl font-bold mb-4 text-center">🔐 MEP Login</h2>
     <form id="login-form" class="space-y-4">
-      <input type="text" id="login-username" placeholder="Username" required class="w-full px-4 py-2 border rounded-md" />
-      <input type="password" id="login-password" placeholder="Password" required class="w-full px-4 py-2 border rounded-md" />
+      <input type="text" id="login-username" placeholder="Username" required class="w-full px-4 py-2 border border-gray-600 bg-gray-800 text-white rounded-md" />
+      <input type="password" id="login-password" placeholder="Password" required class="w-full px-4 py-2 border border-gray-600 bg-gray-800 text-white rounded-md" />
       <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md">Login</button>
     </form>
   </div>
@@ -24,22 +38,22 @@
   </div>
 
   <!-- ➕ Add Recipe -->
-  <div id="form-box" class="bg-white shadow-lg rounded-xl p-8 w-full max-w-md mb-10 hidden">
+  <div id="form-box" class="bg-darksurface shadow-lg rounded-xl p-8 w-full max-w-md mb-10 hidden">
     <h1 class="text-2xl font-bold mb-6 text-center flex items-center justify-center gap-2"><span>📋</span> MEP: Add Recipe</h1>
     <form id="recipe-form" class="space-y-4">
-      <input type="text" id="recipeName" placeholder="Recipe name" required class="w-full px-4 py-2 border rounded-md" />
-      <textarea id="steps" placeholder="Steps (one per line)" required rows="5" class="w-full px-4 py-2 border rounded-md"></textarea>
-      <input type="text" id="station" placeholder="Station (e.g., Prep)" required class="w-full px-4 py-2 border rounded-md" />
+      <input type="text" id="recipeName" placeholder="Recipe name" required class="w-full px-4 py-2 border border-gray-600 bg-gray-800 text-white rounded-md" />
+      <textarea id="steps" placeholder="Steps (one per line)" required rows="5" class="w-full px-4 py-2 border border-gray-600 bg-gray-800 text-white rounded-md"></textarea>
+      <input type="text" id="station" placeholder="Station (e.g., Prep)" required class="w-full px-4 py-2 border border-gray-600 bg-gray-800 text-white rounded-md" />
       <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md">Submit</button>
     </form>
   </div>
 
   <!-- 🧼 Add Cleaning Task -->
-  <div id="cleaning-form-box" class="bg-white shadow-lg rounded-xl p-8 w-full max-w-md mb-10 hidden">
+  <div id="cleaning-form-box" class="bg-darksurface shadow-lg rounded-xl p-8 w-full max-w-md mb-10 hidden">
     <h1 class="text-2xl font-bold mb-6 text-center flex items-center justify-center gap-2"><span>🧼</span> Add Cleaning Task</h1>
     <form id="cleaning-form" class="space-y-4">
-      <input type="text" id="cleaningTask" placeholder="Cleaning task (e.g., sanitize slicer)" required class="w-full px-4 py-2 border rounded-md" />
-      <input type="text" id="assignedTo" placeholder="Assigned to (e.g., PJ)" class="w-full px-4 py-2 border rounded-md" />
+      <input type="text" id="cleaningTask" placeholder="Cleaning task (e.g., sanitize slicer)" required class="w-full px-4 py-2 border border-gray-600 bg-gray-800 text-white rounded-md" />
+      <input type="text" id="assignedTo" placeholder="Assigned to (e.g., PJ)" class="w-full px-4 py-2 border border-gray-600 bg-gray-800 text-white rounded-md" />
       <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md">Save Cleaning Task</button>
     </form>
   </div>
@@ -54,10 +68,10 @@
     <h2 class="text-xl font-bold mb-2 text-center">🧼 Cleaning Tasks</h2>
   </div>
 
+  <!-- 🔧 Script (unchanged logic) -->
   <script>
     const BASE_URL = "https://mep-api-7pph.onrender.com";
 
-    // 🔐 Handle Login
     document.getElementById('login-form').addEventListener('submit', async function (e) {
       e.preventDefault();
       const username = document.getElementById('login-username').value;
@@ -82,7 +96,6 @@
       }
     });
 
-    // ➕ Submit Recipe
     document.getElementById('recipe-form').addEventListener('submit', async function (e) {
       e.preventDefault();
       const recipe = {
@@ -110,7 +123,6 @@
       }
     });
 
-    // ➕ Submit Cleaning Task
     document.getElementById('cleaning-form').addEventListener('submit', async function (e) {
       e.preventDefault();
       const task = {
@@ -137,7 +149,6 @@
       }
     });
 
-    // ❌ Delete Recipe
     function deleteRecipe(id) {
       if (!confirm('Delete this recipe?')) return;
       fetch(`${BASE_URL}/recipes/${id}`, {
@@ -151,7 +162,6 @@
       });
     }
 
-    // ❌ Delete Cleaning Task
     function deleteCleaningTask(id) {
       if (!confirm('Delete this cleaning task?')) return;
       fetch(`${BASE_URL}/cleaning/${id}`, {
@@ -165,7 +175,6 @@
       });
     }
 
-    // 📥 Load Recipes
     function loadRecipes() {
       fetch(`${BASE_URL}/recipes`, {
         headers: {
@@ -178,18 +187,18 @@
         container.classList.remove('hidden');
         container.innerHTML = "<h2 class='text-xl font-bold mb-2 text-center'>📖 Saved Recipes</h2>";
         if (!data.length) {
-          container.innerHTML += "<p class='text-gray-500 text-center'>No recipes saved yet.</p>";
+          container.innerHTML += "<p class='text-gray-400 text-center'>No recipes saved yet.</p>";
           return;
         }
         data.forEach(recipe => {
           container.innerHTML += `
-            <div class="bg-white p-4 rounded-lg shadow border">
+            <div class="bg-darksurface text-darktext p-4 rounded-lg shadow border border-gray-700">
               <div class="flex justify-between items-center mb-2">
                 <h3 class="text-lg font-semibold">${recipe.name}</h3>
-                <button onclick="deleteRecipe('${recipe._id}')" class="text-red-500 text-sm hover:underline">Delete</button>
+                <button onclick="deleteRecipe('${recipe._id}')" class="text-red-400 text-sm hover:underline">Delete</button>
               </div>
-              <p class="text-sm text-gray-600"><strong>Station:</strong> ${recipe.station || 'N/A'}</p>
-              <ul class="list-disc list-inside text-gray-700 mt-1">
+              <p class="text-sm text-gray-300"><strong>Station:</strong> ${recipe.station || 'N/A'}</p>
+              <ul class="list-disc list-inside text-gray-200 mt-1">
                 ${recipe.steps.map(step => `<li>${step}</li>`).join('')}
               </ul>
             </div>`;
@@ -197,7 +206,6 @@
       });
     }
 
-    // 📥 Load Cleaning Tasks
     function loadCleaningTasks() {
       fetch(`${BASE_URL}/cleaning`, {
         headers: {
@@ -210,29 +218,27 @@
         container.classList.remove('hidden');
         container.innerHTML = "<h2 class='text-xl font-bold mb-2 text-center'>🧼 Cleaning Tasks</h2>";
         if (!data.length) {
-          container.innerHTML += "<p class='text-gray-500 text-center'>No cleaning tasks yet.</p>";
+          container.innerHTML += "<p class='text-gray-400 text-center'>No cleaning tasks yet.</p>";
           return;
         }
         data.forEach(task => {
           container.innerHTML += `
-            <div class="bg-white p-4 rounded-lg shadow border">
+            <div class="bg-darksurface text-darktext p-4 rounded-lg shadow border border-gray-700">
               <div class="flex justify-between items-center mb-2">
                 <h3 class="text-lg font-semibold">${task.task}</h3>
-                <button onclick="deleteCleaningTask('${task._id}')" class="text-red-500 text-sm hover:underline">Delete</button>
+                <button onclick="deleteCleaningTask('${task._id}')" class="text-red-400 text-sm hover:underline">Delete</button>
               </div>
-              <p class="text-sm text-gray-600"><strong>Assigned to:</strong> ${task.assignedTo || 'N/A'}</p>
+              <p class="text-sm text-gray-300"><strong>Assigned to:</strong> ${task.assignedTo || 'N/A'}</p>
             </div>`;
         });
       });
     }
 
-    // 🚪 Logout
     function logoutUser() {
       localStorage.removeItem('token');
       updateUI(false);
     }
 
-    // 👀 Toggle UI
     function updateUI(loggedIn) {
       document.getElementById('login-box').classList.toggle('hidden', loggedIn);
       document.getElementById('form-box').classList.toggle('hidden', !loggedIn);
@@ -242,7 +248,6 @@
       document.getElementById('cleaning-list').classList.toggle('hidden', !loggedIn);
     }
 
-    // ✅ On Load
     document.addEventListener('DOMContentLoaded', () => {
       const token = localStorage.getItem('token');
       const isLoggedIn = !!token;
