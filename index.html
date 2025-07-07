@@ -12,73 +12,35 @@
   <div id="login-box" class="bg-white shadow-lg rounded-xl p-6 w-full max-w-md mb-6">
     <h2 class="text-xl font-bold mb-4 text-center">🔐 MEP Login</h2>
     <form id="login-form" class="space-y-4">
-      <input
-        type="text"
-        id="login-username"
-        placeholder="Username"
-        required
-        class="w-full px-4 py-2 border rounded-md"
-      />
-      <input
-        type="password"
-        id="login-password"
-        placeholder="Password"
-        required
-        class="w-full px-4 py-2 border rounded-md"
-      />
-      <button
-        type="submit"
-        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md"
-      >
-        Login
-      </button>
+      <input type="text" id="login-username" placeholder="Username" required class="w-full px-4 py-2 border rounded-md" />
+      <input type="password" id="login-password" placeholder="Password" required class="w-full px-4 py-2 border rounded-md" />
+      <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md">Login</button>
     </form>
   </div>
 
   <!-- 🚪 Logout Button -->
   <div id="logout-box" class="mb-4 hidden">
-    <button
-      onclick="logoutUser()"
-      class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md"
-    >
-      Logout
-    </button>
+    <button onclick="logoutUser()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md">Logout</button>
   </div>
 
   <!-- ➕ Add Recipe -->
   <div id="form-box" class="bg-white shadow-lg rounded-xl p-8 w-full max-w-md mb-10 hidden">
-    <h1 class="text-2xl font-bold mb-6 text-center flex items-center justify-center gap-2">
-      <span>📋</span> MEP: Add Recipe
-    </h1>
-
+    <h1 class="text-2xl font-bold mb-6 text-center flex items-center justify-center gap-2"><span>📋</span> MEP: Add Recipe</h1>
     <form id="recipe-form" class="space-y-4">
-      <input
-        type="text"
-        id="recipeName"
-        placeholder="Recipe name"
-        required
-        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      />
-      <textarea
-        id="steps"
-        placeholder="Steps (one per line)"
-        required
-        rows="5"
-        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      ></textarea>
-      <input
-        type="text"
-        id="station"
-        placeholder="Station (e.g., Prep)"
-        required
-        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      />
-      <button
-        type="submit"
-        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md transition duration-200"
-      >
-        Submit
-      </button>
+      <input type="text" id="recipeName" placeholder="Recipe name" required class="w-full px-4 py-2 border rounded-md" />
+      <textarea id="steps" placeholder="Steps (one per line)" required rows="5" class="w-full px-4 py-2 border rounded-md"></textarea>
+      <input type="text" id="station" placeholder="Station (e.g., Prep)" required class="w-full px-4 py-2 border rounded-md" />
+      <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md">Submit</button>
+    </form>
+  </div>
+
+  <!-- 🧼 Add Cleaning Task -->
+  <div id="cleaning-form-box" class="bg-white shadow-lg rounded-xl p-8 w-full max-w-md mb-10 hidden">
+    <h1 class="text-2xl font-bold mb-6 text-center flex items-center justify-center gap-2"><span>🧼</span> Add Cleaning Task</h1>
+    <form id="cleaning-form" class="space-y-4">
+      <input type="text" id="cleaningTask" placeholder="Cleaning task (e.g., sanitize slicer)" required class="w-full px-4 py-2 border rounded-md" />
+      <input type="text" id="assignedTo" placeholder="Assigned to (e.g., PJ)" class="w-full px-4 py-2 border rounded-md" />
+      <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md">Save Cleaning Task</button>
     </form>
   </div>
 
@@ -87,48 +49,47 @@
     <h2 class="text-xl font-bold mb-2 text-center">📖 Saved Recipes</h2>
   </div>
 
+  <!-- 🧼 Cleaning Task List -->
+  <div id="cleaning-list" class="w-full max-w-2xl space-y-6 hidden">
+    <h2 class="text-xl font-bold mb-2 text-center">🧼 Cleaning Tasks</h2>
+  </div>
+
   <script>
     const BASE_URL = "https://mep-api-7pph.onrender.com";
 
     // 🔐 Handle Login
     document.getElementById('login-form').addEventListener('submit', async function (e) {
       e.preventDefault();
-
       const username = document.getElementById('login-username').value;
       const password = document.getElementById('login-password').value;
-
       try {
         const res = await fetch(`${BASE_URL}/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password })
         });
-
         const data = await res.json();
-
         if (res.ok) {
           localStorage.setItem('token', data.token);
           updateUI(true);
           loadRecipes();
+          loadCleaningTasks();
         } else {
           alert(`❌ Login failed: ${data.message}`);
         }
       } catch (err) {
-        console.error('Login error:', err);
         alert('Login error');
       }
     });
 
-    // ➕ Submit Recipe (Auth)
+    // ➕ Submit Recipe
     document.getElementById('recipe-form').addEventListener('submit', async function (e) {
       e.preventDefault();
-
       const recipe = {
         name: document.getElementById('recipeName').value,
         steps: document.getElementById('steps').value.split('\n').map(s => s.trim()).filter(Boolean),
         station: document.getElementById('station').value
       };
-
       try {
         const res = await fetch(`${BASE_URL}/recipes`, {
           method: 'POST',
@@ -138,7 +99,6 @@
           },
           body: JSON.stringify(recipe)
         });
-
         if (res.ok) {
           document.getElementById('recipe-form').reset();
           loadRecipes();
@@ -146,32 +106,63 @@
           alert('❌ Error saving recipe.');
         }
       } catch (err) {
-        console.error('Submission failed:', err);
         alert('❌ Server error submitting recipe.');
+      }
+    });
+
+    // ➕ Submit Cleaning Task
+    document.getElementById('cleaning-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const task = {
+        task: document.getElementById('cleaningTask').value,
+        assignedTo: document.getElementById('assignedTo').value
+      };
+      try {
+        const res = await fetch(`${BASE_URL}/cleaning`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify(task)
+        });
+        if (res.ok) {
+          document.getElementById('cleaning-form').reset();
+          loadCleaningTasks();
+        } else {
+          alert('❌ Error saving cleaning task.');
+        }
+      } catch (err) {
+        alert('❌ Server error saving cleaning task.');
       }
     });
 
     // ❌ Delete Recipe
     function deleteRecipe(id) {
       if (!confirm('Delete this recipe?')) return;
-
       fetch(`${BASE_URL}/recipes/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
-      })
-        .then(res => {
-          if (res.ok) {
-            loadRecipes();
-          } else {
-            alert('Failed to delete recipe.');
-          }
-        })
-        .catch(err => {
-          console.error('Delete error:', err);
-          alert('Error deleting recipe.');
-        });
+      }).then(res => {
+        if (res.ok) loadRecipes();
+        else alert('Failed to delete recipe.');
+      });
+    }
+
+    // ❌ Delete Cleaning Task
+    function deleteCleaningTask(id) {
+      if (!confirm('Delete this cleaning task?')) return;
+      fetch(`${BASE_URL}/cleaning/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      }).then(res => {
+        if (res.ok) loadCleaningTasks();
+        else alert('Failed to delete cleaning task.');
+      });
     }
 
     // 📥 Load Recipes
@@ -181,43 +172,58 @@
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       })
-        .then(res => res.json())
-        .then(data => {
-          const container = document.getElementById('recipe-list');
-          container.classList.remove('hidden');
-          container.innerHTML = "<h2 class='text-xl font-bold mb-2 text-center'>📖 Saved Recipes</h2>";
-
-          if (!data.length) {
-            container.innerHTML += "<p class='text-gray-500 text-center'>No recipes saved yet.</p>";
-            return;
-          }
-
-          data.forEach(recipe => {
-            container.innerHTML += `
-              <div class="bg-white p-4 rounded-lg shadow border">
-                <div class="flex justify-between items-center mb-2">
-                  <h3 class="text-lg font-semibold">${recipe.name}</h3>
-                  <button 
-                    onclick="deleteRecipe('${recipe._id}')" 
-                    class="text-red-500 text-sm hover:underline"
-                  >Delete</button>
-                </div>
-                <p class="text-sm text-gray-600"><strong>Station:</strong> ${recipe.station || 'N/A'}</p>
-                <div class="text-sm mt-2">
-                  <strong>Steps:</strong>
-                  <ul class="list-disc list-inside text-gray-700 mt-1">
-                    ${recipe.steps.map(step => `<li>${step}</li>`).join('')}
-                  </ul>
-                </div>
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById('recipe-list');
+        container.classList.remove('hidden');
+        container.innerHTML = "<h2 class='text-xl font-bold mb-2 text-center'>📖 Saved Recipes</h2>";
+        if (!data.length) {
+          container.innerHTML += "<p class='text-gray-500 text-center'>No recipes saved yet.</p>";
+          return;
+        }
+        data.forEach(recipe => {
+          container.innerHTML += `
+            <div class="bg-white p-4 rounded-lg shadow border">
+              <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-semibold">${recipe.name}</h3>
+                <button onclick="deleteRecipe('${recipe._id}')" class="text-red-500 text-sm hover:underline">Delete</button>
               </div>
-            `;
-          });
-        })
-        .catch(err => {
-          document.getElementById('recipe-list').innerHTML +=
-            "<p class='text-red-500 text-center'>Error loading recipes.</p>";
-          console.error('Load error:', err);
+              <p class="text-sm text-gray-600"><strong>Station:</strong> ${recipe.station || 'N/A'}</p>
+              <ul class="list-disc list-inside text-gray-700 mt-1">
+                ${recipe.steps.map(step => `<li>${step}</li>`).join('')}
+              </ul>
+            </div>`;
         });
+      });
+    }
+
+    // 📥 Load Cleaning Tasks
+    function loadCleaningTasks() {
+      fetch(`${BASE_URL}/cleaning`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById('cleaning-list');
+        container.classList.remove('hidden');
+        container.innerHTML = "<h2 class='text-xl font-bold mb-2 text-center'>🧼 Cleaning Tasks</h2>";
+        if (!data.length) {
+          container.innerHTML += "<p class='text-gray-500 text-center'>No cleaning tasks yet.</p>";
+          return;
+        }
+        data.forEach(task => {
+          container.innerHTML += `
+            <div class="bg-white p-4 rounded-lg shadow border">
+              <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-semibold">${task.task}</h3>
+                <button onclick="deleteCleaningTask('${task._id}')" class="text-red-500 text-sm hover:underline">Delete</button>
+              </div>
+              <p class="text-sm text-gray-600"><strong>Assigned to:</strong> ${task.assignedTo || 'N/A'}</p>
+            </div>`;
+        });
+      });
     }
 
     // 🚪 Logout
@@ -232,14 +238,19 @@
       document.getElementById('form-box').classList.toggle('hidden', !loggedIn);
       document.getElementById('logout-box').classList.toggle('hidden', !loggedIn);
       document.getElementById('recipe-list').classList.toggle('hidden', !loggedIn);
+      document.getElementById('cleaning-form-box').classList.toggle('hidden', !loggedIn);
+      document.getElementById('cleaning-list').classList.toggle('hidden', !loggedIn);
     }
 
-    // ✅ On load: Check auth
+    // ✅ On Load
     document.addEventListener('DOMContentLoaded', () => {
       const token = localStorage.getItem('token');
       const isLoggedIn = !!token;
       updateUI(isLoggedIn);
-      if (isLoggedIn) loadRecipes();
+      if (isLoggedIn) {
+        loadRecipes();
+        loadCleaningTasks();
+      }
     });
   </script>
 </body>
