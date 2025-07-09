@@ -1,9 +1,11 @@
 document.getElementById('cleaning-form').addEventListener('submit', async function (e) {
   e.preventDefault();
+
   const task = {
-    title: document.getElementById('cleaningTask').value,
-    description: document.getElementById('assignedTo').value
+    title: document.getElementById('title').value,
+    description: document.getElementById('description').value
   };
+
   try {
     const res = await fetch(`${BASE_URL}/cleaning`, {
       method: 'POST',
@@ -13,6 +15,7 @@ document.getElementById('cleaning-form').addEventListener('submit', async functi
       },
       body: JSON.stringify(task)
     });
+
     if (res.ok) {
       document.getElementById('cleaning-form').reset();
       loadCleaningTasks();
