@@ -22,7 +22,6 @@
 </head>
 <body class="bg-darkbg text-darktext bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-repeat flex flex-col items-center justify-start min-h-screen font-sans p-4">
 
-
   <!-- 🔐 Login Box -->
   <div id="login-box" class="bg-darksurface shadow-lg rounded-xl p-6 w-full max-w-md mb-6">
     <h2 class="text-xl font-bold mb-4 text-center">🔐 MEP Login</h2>
@@ -36,6 +35,21 @@
   <!-- 🚪 Logout Button -->
   <div id="logout-box" class="mb-4 hidden">
     <button onclick="logoutUser()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md">Logout</button>
+  </div>
+
+  <!-- ✍️ Whiteboard -->
+  <div id="whiteboard-box" class="bg-darksurface shadow-lg rounded-xl p-6 w-full max-w-4xl mb-10 hidden">
+    <h2 class="text-2xl font-bold mb-6 text-center">🧠 Whiteboard</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <h3 class="text-lg font-semibold mb-2">🔵 Today’s Prep</h3>
+        <textarea rows="12" class="w-full p-4 border border-gray-600 bg-gray-800 text-white rounded-md" placeholder="Write today’s prep here..."></textarea>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold mb-2">🟡 Tomorrow’s Prep</h3>
+        <textarea rows="12" class="w-full p-4 border border-gray-600 bg-gray-800 text-white rounded-md" placeholder="Write tomorrow’s prep here..."></textarea>
+      </div>
+    </div>
   </div>
 
   <!-- ➕ Add Recipe -->
@@ -60,16 +74,12 @@
   </div>
 
   <!-- 📖 Saved Recipes -->
-  <div id="recipe-list" class="w-full max-w-2xl space-y-6 hidden">
-    <h2 class="text-xl font-bold mb-2 text-center">📖 Saved Recipes</h2>
-  </div>
+  <div id="recipe-list" class="w-full max-w-2xl space-y-6 hidden"></div>
 
   <!-- 🧼 Cleaning Task List -->
-  <div id="cleaning-list" class="w-full max-w-2xl space-y-6 hidden">
-    <h2 class="text-xl font-bold mb-2 text-center">🧼 Cleaning Tasks</h2>
-  </div>
+  <div id="cleaning-list" class="w-full max-w-2xl space-y-6 hidden"></div>
 
-  <!-- 🔧 Script (unchanged logic) -->
+  <!-- 🔧 Scripts -->
   <script>
     const BASE_URL = "https://mep-api-7pph.onrender.com";
 
@@ -235,11 +245,6 @@
       });
     }
 
-    function logoutUser() {
-      localStorage.removeItem('token');
-      updateUI(false);
-    }
-
     function updateUI(loggedIn) {
       document.getElementById('login-box').classList.toggle('hidden', loggedIn);
       document.getElementById('form-box').classList.toggle('hidden', !loggedIn);
@@ -247,6 +252,12 @@
       document.getElementById('recipe-list').classList.toggle('hidden', !loggedIn);
       document.getElementById('cleaning-form-box').classList.toggle('hidden', !loggedIn);
       document.getElementById('cleaning-list').classList.toggle('hidden', !loggedIn);
+      document.getElementById('whiteboard-box').classList.toggle('hidden', !loggedIn);
+    }
+
+    function logoutUser() {
+      localStorage.removeItem('token');
+      updateUI(false);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
