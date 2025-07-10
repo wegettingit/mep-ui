@@ -23,7 +23,7 @@ document.getElementById('cleaning-form').addEventListener('submit', async functi
 
     if (res.ok) {
       document.getElementById('cleaning-form').reset();
-      loadCleaningTasks();
+      loadCleaningTasks?.();
       alert('✅ Cleaning task saved');
     } else {
       alert(`❌ ${data.message || 'Error saving cleaning task'}`);
@@ -93,7 +93,7 @@ function loadWhiteboard() {
 // 💾 Save Whiteboard
 function saveWhiteboard(e) {
   e.preventDefault();
-  console.log('🧠 Whiteboard save triggered'); //
+  console.log('🧠 Whiteboard save triggered');
 
   const token = localStorage.getItem('token');
   if (!token) {
@@ -129,10 +129,8 @@ function saveWhiteboard(e) {
 // 🔘 Bind whiteboard form
 document.getElementById('whiteboard-form').addEventListener('submit', saveWhiteboard);
 
-
 // 📦 Load initial data if logged in
 if (localStorage.getItem('token')) {
   loadCleaningTasks?.();
   loadWhiteboard();
 }
-});
