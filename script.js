@@ -93,6 +93,7 @@ function loadWhiteboard() {
 // 💾 Save Whiteboard
 function saveWhiteboard(e) {
   e.preventDefault();
+  console.log('🧠 Whiteboard save triggered'); //
 
   const token = localStorage.getItem('token');
   if (!token) {
