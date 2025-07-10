@@ -35,14 +35,18 @@
   <!-- 🧠 Whiteboard Section -->
   <div id="whiteboard-box" class="bg-darksurface shadow-lg rounded-xl p-8 w-full max-w-3xl mb-10 hidden">
     <h1 class="text-2xl font-bold mb-6 text-center">🧠 Whiteboard: Today & Tomorrow's Prep</h1>
-  <form id="whiteboard-form">
-  <label for="todayPrep">Today’s Prep</label>
-  <textarea id="todayPrep" placeholder="Enter today's prep..."></textarea>
-
-  <label for="tomorrowPrep">Tomorrow’s Prep</label>
-  <textarea id="tomorrowPrep" placeholder="Enter tomorrow's prep..."></textarea>
-
-  <button type="submit">Save Whiteboard</button>
+  <form id="whiteboard-form" class="mb-6 space-y-4">
+  <div>
+    <label for="todayPrep" class="block text-sm font-semibold">Today’s Prep</label>
+    <textarea id="todayPrep" class="w-full p-2 rounded bg-darksurface text-darktext" rows="3"></textarea>
+  </div>
+  <div>
+    <label for="tomorrowPrep" class="block text-sm font-semibold">Tomorrow’s Prep</label>
+    <textarea id="tomorrowPrep" class="w-full p-2 rounded bg-darksurface text-darktext" rows="3"></textarea>
+  </div>
+  <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+    💾 Save Whiteboard
+  </button>
 </form>
 
 
