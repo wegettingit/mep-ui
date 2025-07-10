@@ -128,6 +128,7 @@ function saveWhiteboard(e) {
 // 🔘 Bind whiteboard form
 document.getElementById('whiteboard-form').addEventListener('submit', saveWhiteboard);
 
+
 // 📦 Load initial data if logged in
 if (localStorage.getItem('token')) {
   loadCleaningTasks?.();
