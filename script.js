@@ -90,7 +90,7 @@ function loadWhiteboard() {
   });
 }
 
-// 💾 Save Whiteboard
+// 💾 Save Whiteboard (Final Fixed Version)
 function saveWhiteboard(e) {
   e.preventDefault();
   console.log('🧠 Whiteboard save triggered');
@@ -101,8 +101,11 @@ function saveWhiteboard(e) {
     return;
   }
 
-  const today = document.getElementById('todayPrep').value;
-  const tomorrow = document.getElementById('tomorrowPrep').value;
+  const todayPrep = document.getElementById('todayPrep').value.trim();
+  const tomorrowPrep = document.getElementById('tomorrowPrep').value.trim();
+
+  console.log('📦 Sending whiteboard data:', { todayPrep, tomorrowPrep });
+  console.log('🔐 Token being sent:', token);
 
   fetch(`${BASE_URL}/whiteboard`, {
     method: 'POST',
@@ -110,21 +113,24 @@ function saveWhiteboard(e) {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     },
-    body: JSON.stringify({ todayPrep: today, tomorrowPrep: tomorrow })
+    body: JSON.stringify({ todayPrep, tomorrowPrep })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.message) {
-      alert(`✅ ${data.message}`);
-    } else {
-      throw new Error('Unexpected response');
+  .then(async (res) => {
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || 'Server error');
     }
+
+    console.log('✅ Whiteboard save success:', data);
+    alert(`✅ ${data.message}`);
   })
   .catch(err => {
     console.error('❌ Error saving whiteboard:', err);
     alert('❌ Error saving whiteboard');
   });
 }
+
 
 // 🔘 Bind whiteboard form
 document.getElementById('whiteboard-form').addEventListener('submit', saveWhiteboard);
