@@ -5,102 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🔐 MEP Login</title>
     <style>
-    body {
-        background-color: #1a1b26;
-        color: #c0caf5;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        margin: 0;
-        padding: 20px;
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-    }
-    .container {
-        width: 100%;
-        max-width: 800px;
-    }
-    .section {
-        background-color: #24283b;
-        padding: 24px;
-        border-radius: 12px;
-        margin-bottom: 24px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.4);
-    }
-    h2 {
-        display: flex;
-        align-items: center;
-        font-size: 1.4rem;
-        font-weight: 600;
-        margin-bottom: 16px;
-        border-bottom: 1px solid #414868;
-        padding-bottom: 8px;
-    }
-    h2::before {
-        content: '🧠';
-        margin-right: 12px;
-        font-size: 1.3em;
-    }
-    input, textarea {
-        width: 100%;
-        background-color: #414868;
-        color: #c0caf5;
-        border: none;
-        padding: 12px;
-        margin-bottom: 12px;
-        border-radius: 6px;
-        font-size: 1rem;
-        outline: none;
-        transition: background-color 0.2s ease;
-    }
-    input:focus, textarea:focus {
-        background-color: #5a5f89;
-    }
-    textarea {
-        min-height: 100px;
-        resize: vertical;
-    }
-    button {
-        background-color: #7aa2f7;
-        color: #1a1b26;
-        border: none;
-        padding: 12px 20px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: bold;
-        font-size: 1rem;
-        width: 100%;
-        margin-bottom: 10px;
-        transition: background-color 0.2s ease;
-    }
-    button:hover {
-        background-color: #9ab3ff;
-    }
-    .delete-btn {
-        background-color: #f7768e;
-        width: auto;
-        padding: 6px 12px;
-        margin-top: 5px;
-    }
-    .recipe-content ul {
-        list-style-type: disc;
-        padding-left: 20px;
-    }
-    .recipe, .cleaning-task {
-        background-color: #414868;
-        padding: 10px;
-        margin-bottom: 10px;
-        border-radius: 6px;
-    }
-    .hidden {
-        display: none;
-    }
-    @media (max-width: 600px) {
-        body { padding: 10px; }
-        .section { padding: 16px; }
-    }
-</style>
-
+        body {
+            background-color: #1a1b26;
+            color: #c0caf5;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .section {
+            background-color: #24283b;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        h2::before {
+            content: '🧠';
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        input, textarea {
+            width: 100%;
+            background-color: #414868;
+            color: #c0caf5;
+            border: none;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        textarea {
+            min-height: 100px;
+        }
+        button {
+            background-color: #7aa2f7;
+            color: #1a1b26;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #9ab3ff;
+        }
+        .delete-btn {
+            background-color: #f7768e;
+            width: auto;
+            padding: 5px 10px;
+            margin-top: 5px;
+        }
+        .recipe-content ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        .recipe, .cleaning-task {
+            background-color: #414868;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .hidden {
+            display: none;
+        }
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .section { padding: 15px; }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -147,8 +127,8 @@
             <div class="section">
                 <h2>🧼 Add Cleaning Task</h2>
                 <form id="cleaning-form">
-                    <input type="text" id="title" placeholder="Cleaning task (e.g., sanitize slicer)">
-                    <input type="text" id="description" placeholder="Assigned to (e.g., PJ)">
+                    <input type="text" id="task" placeholder="Cleaning task (e.g., sanitize slicer)"> <!-- Changed ID -->
+                    <input type="text" id="assignedTo" placeholder="Assigned to (e.g., PJ)"> <!-- Changed ID -->
                     <button type="submit">Save Cleaning Task</button>
                 </form>
             </div>
@@ -163,6 +143,258 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        const BASE_URL = 'https://mep-api-7pph.onrender.com';
+
+        let token = localStorage.getItem('token');
+        let station = localStorage.getItem('station');
+
+        if (token) {
+            showApp();
+            document.getElementById('station').value = station || 'Prep'; // Fallback to avoid undefined
+            loadWhiteboard();
+            loadRecipes();
+            loadCleaningTasks();
+        }
+
+        // Event Listeners
+        document.getElementById('whiteboard-form').addEventListener('submit', saveWhiteboard);
+        document.getElementById('recipe-form').addEventListener('submit', addRecipe);
+        document.getElementById('cleaning-form').addEventListener('submit', addCleaningTask);
+
+        function showApp() {
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('app-section').classList.remove('hidden');
+        }
+
+        async function register() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const accessKey = document.getElementById('accessKey').value;
+            const stationInput = document.getElementById('stationInput').value;
+
+            try {
+                const res = await fetch(`${BASE_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, accessKey, station: stationInput })
+                });
+                const data = await res.json();
+                alert(data.message);
+            } catch (err) {
+                alert('Registration failed: ' + err.message);
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const res = await fetch(`${BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('station', data.station || 'Prep');
+                    token = data.token;
+                    station = data.station || 'Prep';
+                    showApp();
+                    document.getElementById('station').value = station;
+                    loadWhiteboard();
+                    loadRecipes();
+                    loadCleaningTasks();
+                } else {
+                    alert(data.message || 'Login failed');
+                }
+            } catch (err) {
+                alert('Login failed: ' + err.message);
+            }
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.reload();
+        }
+
+        async function saveWhiteboard(e) {
+            e.preventDefault();
+            const todayPrep = document.getElementById('todayPrep').value;
+            const tomorrowPrep = document.getElementById('tomorrowPrep').value;
+
+            try {
+                const res = await fetch(`${BASE_URL}/whiteboard`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ todayPrep, tomorrowPrep })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Save failed');
+                alert(data.message);
+            } catch (err) {
+                alert('Save whiteboard failed: ' + err.message);
+            }
+        }
+
+        async function loadWhiteboard() {
+            try {
+                const res = await fetch(`${BASE_URL}/whiteboard`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                document.getElementById('todayPrep').value = data.todayPrep || '';
+                document.getElementById('tomorrowPrep').value = data.tomorrowPrep || '';
+            } catch (err) {
+                alert('Load whiteboard failed: ' + err.message);
+            }
+        }
+
+        async function addRecipe(e) {
+            e.preventDefault();
+            const name = document.getElementById('recipeName').value;
+            const steps = document.getElementById('steps').value;
+            const stationVal = document.getElementById('station').value || 'Prep'; // Fallback
+
+            try {
+                const res = await fetch(`${BASE_URL}/recipes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ name, steps, station: stationVal })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Add failed');
+                document.getElementById('response').innerText = `✅ ${data.message}`;
+                document.getElementById('recipe-form').reset();
+                loadRecipes();
+            } catch (err) {
+                document.getElementById('response').innerText = '❌ Add recipe failed: ' + err.message;
+            }
+        }
+
+        async function loadRecipes() {
+            try {
+                const res = await fetch(`${BASE_URL}/recipes`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const recipes = await res.json();
+                const container = document.getElementById('savedRecipes');
+                container.innerHTML = '';
+                recipes.forEach(r => {
+                    const div = document.createElement('div');
+                    div.className = 'recipe';
+                    div.innerHTML = `
+                        <h3>${r.name}</h3>
+                        <div class="recipe-content">${parseMarkdown(r.steps)}</div>
+                        <p>Station: ${r.station || 'Not set'}</p> <!-- Fix undefined -->
+                        <button class="delete-btn" onclick="deleteRecipe('${r._id}')">Delete</button>
+                    `;
+                    container.appendChild(div);
+                });
+            } catch (err) {
+                alert('Load recipes failed: ' + err.message);
+            }
+        }
+
+        async function deleteRecipe(id) {
+            try {
+                const res = await fetch(`${BASE_URL}/recipes/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Delete failed');
+                alert(data.message);
+                loadRecipes();
+            } catch (err) {
+                alert('Delete recipe failed: ' + err.message);
+            }
+        }
+
+        async function addCleaningTask(e) {
+            e.preventDefault();
+            const task = document.getElementById('task').value; // Aligned ID
+            const assignedTo = document.getElementById('assignedTo').value; // Aligned ID
+
+            try {
+                const res = await fetch(`${BASE_URL}/cleaning`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ task, assignedTo })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Add failed');
+                document.getElementById('cleaning-form').reset();
+                loadCleaningTasks();
+                alert('✅ Cleaning task saved');
+            } catch (err) {
+                alert('Add task failed: ' + err.message);
+            }
+        }
+
+        async function loadCleaningTasks() {
+            try {
+                const res = await fetch(`${BASE_URL}/cleaning`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const tasks = await res.json();
+                const container = document.getElementById('cleaningTasks');
+                container.innerHTML = '';
+                tasks.forEach(t => {
+                    const div = document.createElement('div');
+                    div.className = 'cleaning-task';
+                    div.innerHTML = `
+                        <h3>${t.task}</h3>
+                        <p>Assigned to: ${t.assignedTo}</p>
+                        <button class="delete-btn" onclick="deleteCleaningTask('${t._id}')">Delete</button>
+                    `;
+                    container.appendChild(div);
+                });
+            } catch (err) {
+                alert('Load tasks failed: ' + err.message);
+            }
+        }
+
+        async function deleteCleaningTask(id) {
+            try {
+                const res = await fetch(`${BASE_URL}/cleaning/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Delete failed');
+                alert(data.message);
+                loadCleaningTasks();
+            } catch (err) {
+                alert('Delete task failed: ' + err.message);
+            }
+        }
+
+        // Simple Markdown Parser
+        function parseMarkdown(text) {
+            return text
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/^\* (.*$)/gm, '<li>$1</li>')
+                .replace(/\n/g, '<br>');
+        }
+
+        // Load data if logged in
+        if (localStorage.getItem('token')) {
+            loadWhiteboard();
+            loadRecipes();
+            loadCleaningTasks();
+        }
+    </script>
 </body>
 </html>
