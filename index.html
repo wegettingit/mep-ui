@@ -5,82 +5,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🔐 MEP Login</title>
     <style>
-        body {
-            background-color: #1a1b26;
-            color: #c0caf5;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .section {
-            background-color: #24283b;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        h2 {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        h2::before {
-            content: '🧠';
-            margin-right: 10px;
-            font-size: 1.2em;
-        }
-        input, textarea {
-            width: 100%;
-            background-color: #414868;
-            color: #c0caf5;
-            border: none;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-        }
-        textarea {
-            min-height: 100px;
-        }
-        button {
-            background-color: #7aa2f7;
-            color: #1a1b26;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-        }
-        button:hover {
-            background-color: #9ab3ff;
-        }
-        .delete-btn {
-            background-color: #f7768e;
-            width: auto;
-            padding: 5px 10px;
-            margin-top: 5px;
-        }
-        .recipe-content ul {
-            list-style-type: disc;
-            padding-left: 20px;
-        }
-        .recipe, .cleaning-task {
-            background-color: #414868;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-        }
-        .hidden {
-            display: none;
-        }
-        @media (max-width: 600px) {
-            body { padding: 10px; }
-            .section { padding: 15px; }
-        }
-    </style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: #1a1b26;
+    color: #c0caf5;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 400px;
+    background-color: #24283b;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  }
+
+  h2 {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #414868;
+    padding-bottom: 12px;
+  }
+
+  input {
+    width: 100%;
+    background-color: #414868;
+    color: #c0caf5;
+    border: none;
+    padding: 12px;
+    margin-bottom: 16px;
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+
+  input::placeholder {
+    color: #a9b1d6;
+  }
+
+  input:focus {
+    outline: none;
+    background-color: #5a5f89;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    background-color: #7aa2f7;
+    color: #1a1b26;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  button:hover {
+    background-color: #9ab3ff;
+  }
+</style>
 </head>
 <body>
     <div class="container">
