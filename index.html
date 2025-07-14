@@ -3,75 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔐 MEP Login</title>
+    <title>MEP Login</title>
     <style>
         body {
             background-color: #1a1b26;
-            color: #c0caf5;
-            font-family: Arial, sans-serif;
+            color: #f4d9e1;
+            font-family: 'Segoe UI', sans-serif;
             margin: 0;
             padding: 20px;
             min-height: 100vh;
         }
         .container {
-            max-width: 800px;
+            max-width: 700px;
             margin: 0 auto;
         }
         .section {
-            background-color: #24283b;
+            background-color: #2b2d40;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 10px;
             margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(244, 217, 225, 0.15);
         }
         h2 {
-            display: flex;
-            align-items: center;
+            font-size: 1.4em;
             margin-bottom: 10px;
-        }
-        h2::before {
-            content: '';
-            margin-right: 10px;
-            font-size: 1.2em;
+            color: #f4d9e1;
         }
         input, textarea {
             width: 100%;
-            background-color: #414868;
-            color: #c0caf5;
-            border: none;
+            background-color: #3a3c58;
+            color: #f4d9e1;
+            border: 1px solid #4e5174;
             padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
+            margin-bottom: 12px;
+            border-radius: 6px;
         }
         textarea {
             min-height: 100px;
         }
         button {
-            background-color: #7aa2f7;
+            background-color: #c574dd;
             color: #1a1b26;
             border: none;
             padding: 10px 20px;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             width: 100%;
+            transition: background-color 0.3s ease;
         }
         button:hover {
-            background-color: #9ab3ff;
+            background-color: #df94ee;
         }
         .delete-btn {
-            background-color: #f7768e;
-            width: auto;
-            padding: 5px 10px;
+            background-color: #ff89b5;
+            padding: 5px 12px;
+            border: none;
+            border-radius: 4px;
             margin-top: 5px;
+            cursor: pointer;
         }
         .recipe-content ul {
             list-style-type: disc;
             padding-left: 20px;
         }
         .recipe, .cleaning-task {
-            background-color: #414868;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
+            background-color: #3a3c58;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 6px;
         }
         .hidden {
             display: none;
@@ -85,7 +84,7 @@
 <body>
     <div class="container">
         <div id="auth-section" class="section">
-            <h2>🔐 MEP Login / Register</h2>
+            <h2>MEP Login / Register</h2>
             <input type="text" id="username" placeholder="Username">
             <input type="password" id="password" placeholder="Password">
             <input type="text" id="accessKey" placeholder="Access Key (for register only)">
@@ -95,19 +94,17 @@
         </div>
 
         <div id="app-section" class="hidden">
-            <!-- Whiteboard Section -->
             <div class="section">
-                <h2>🧠 Whiteboard: Today & Tomorrow's Prep</h2>
+                <h2>Whiteboard: Today & Tomorrow's Prep</h2>
                 <form id="whiteboard-form">
                     <textarea id="todayPrep" placeholder="Today’s Prep"></textarea>
                     <textarea id="tomorrowPrep" placeholder="Tomorrow’s Prep"></textarea>
-                    <button type="submit">💾 Save Whiteboard</button>
+                    <button type="submit">Save Whiteboard</button>
                 </form>
             </div>
 
-            <!-- Add Recipe Section -->
             <div class="section">
-                <h2>📋 MEP: Add Recipe</h2>
+                <h2>MEP: Add Recipe</h2>
                 <form id="recipe-form">
                     <input type="text" id="recipeName" placeholder="Recipe name">
                     <textarea id="steps" placeholder="Steps (one per line, use * for bullets, ### for sections)"></textarea>
@@ -117,23 +114,20 @@
                 <div id="response"></div>
             </div>
 
-            <!-- Saved Recipes Section -->
             <div class="section">
                 <h2>Saved Recipes</h2>
                 <div id="savedRecipes"></div>
             </div>
 
-            <!-- Add Cleaning Task Section -->
             <div class="section">
-                <h2>🧼 Add Cleaning Task</h2>
+                <h2>Add Cleaning Task</h2>
                 <form id="cleaning-form">
-                    <input type="text" id="task" placeholder="Cleaning task (e.g., sanitize slicer)"> <!-- Changed ID -->
-                    <input type="text" id="assignedTo" placeholder="Assigned to (e.g., PJ)"> <!-- Changed ID -->
+                    <input type="text" id="task" placeholder="Cleaning task (e.g., sanitize slicer)">
+                    <input type="text" id="assignedTo" placeholder="Assigned to (e.g., PJ)">
                     <button type="submit">Save Cleaning Task</button>
                 </form>
             </div>
 
-            <!-- Cleaning Tasks Section -->
             <div class="section">
                 <h2>Cleaning Tasks</h2>
                 <div id="cleaningTasks"></div>
