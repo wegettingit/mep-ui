@@ -1,5 +1,21 @@
 const BASE_URL = 'https://mep-api-7pph.onrender.com';
 
+
+async function authFetch(url, options = {}) {
+  const token = localStorage.getItem('token');
+  const headers = options.headers || {};
+  headers['Authorization'] = `Bearer ${token}`;
+
+  const res = await fetch(url, { ...options, headers });
+  if (res.status === 401 || res.status === 403) {
+    alert('⚠️ Session expired. Please log in again.');
+    logout();
+    return null;
+  }
+  return res;
+}
+
+
 // Auth Functions
 async function register() {
   const username = document.getElementById('username').value;
@@ -137,7 +153,7 @@ async function loadRecipes() {
     const recipes = await res.json();
     const container = document.getElementById('savedRecipes');
     container.innerHTML = '';
-    recipes.forEach(r => {
+    if (Array.isArray(recipes)) recipes.forEach(r => {
       const div = document.createElement('div');
       div.className = 'recipe';
       div.innerHTML = `
@@ -171,8 +187,8 @@ async function deleteRecipe(id) {
 document.getElementById('cleaning-form').addEventListener('submit', async function (e) {
   e.preventDefault();
 
-  const title = document.getElementById('title').value;
-  const description = document.getElementById('description').value;
+  const task = document.getElementById('task').value;
+  const assignedTo = document.getElementById('assignedTo').value;
 
   try {
     const res = await fetch(`${BASE_URL}/cleaning`, {
@@ -205,7 +221,7 @@ async function loadCleaningTasks() {
     const tasks = await res.json();
     const container = document.getElementById('cleaningTasks');
     container.innerHTML = '';
-    tasks.forEach(t => {
+    if (Array.isArray(tasks)) tasks.forEach(t => {
       const div = document.createElement('div');
       div.className = 'cleaning-task';
       div.innerHTML = `
