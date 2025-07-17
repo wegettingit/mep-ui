@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MEP Login</title>
+  <title>MEP App</title>
   <style>
     body {
       background-color: #1a1b26;
@@ -72,20 +72,7 @@
       margin-bottom: 12px;
       border-radius: 6px;
     }
-    .hidden {
-      display: none;
-    }
-    #quote-box {
-      background-color: #24283b;
-      color: #f4d9e1;
-      padding: 16px;
-      border-radius: 12px;
-      text-align: center;
-      margin-bottom: 20px;
-      font-style: italic;
-      font-size: 1.1em;
-      box-shadow: 0 0 12px rgba(255, 255, 255, 0.05);
-    }
+    .hidden { display: none; }
     @media (max-width: 600px) {
       body { padding: 10px; }
       .section { padding: 15px; }
@@ -94,39 +81,26 @@
 </head>
 <body>
   <div class="container">
-    <!-- Start-of-Shift Quote Widget -->
-<div class="section" id="quote-widget">
-  <h2>Start of Shift Quote</h2>
-  <div id="quote-box" style="font-style: italic;">Loading inspiration...</div>
-</div>
-
     <div id="auth-section" class="section">
-      <h2>MEP Login / Register</h2>
+      <h2>MEP Login</h2>
       <input type="text" id="username" placeholder="Username">
       <input type="password" id="password" placeholder="Password">
-      <input type="text" id="accessKey" placeholder="Access Key (for register only)">
-      <input type="text" id="stationInput" placeholder="Station (for register only)">
-      <button onclick="register()">Register</button>
       <button onclick="login()">Login</button>
     </div>
 
-    <!-- Request Access Form -->
-<div class="section" id="request-access">
-  <h2>Need Access?</h2>
-  <p>Request to join your station or kitchen crew.</p>
-  <form id="request-form">
-    <input type="text" id="requestUsername" placeholder="Your name or username" required>
-    <input type="text" id="requestStation" placeholder="Requested station (e.g., Prep)" required>
-    <textarea id="requestNote" placeholder="Anything you'd like us to know..."></textarea>
-    <button type="submit">Submit Request</button>
-  </form>
-  <div id="requestResponse"></div>
-</div>
+    <div class="section" id="request-access">
+      <h2>Need Access?</h2>
+      <p>Request to join your station or kitchen crew.</p>
+      <form id="request-form">
+        <input type="text" id="requestUsername" placeholder="Your name or username" required>
+        <input type="text" id="requestStation" placeholder="Requested station (e.g., Prep)" required>
+        <textarea id="requestNote" placeholder="Anything you'd like us to know..."></textarea>
+        <button type="submit">Submit Request</button>
+      </form>
+      <div id="requestResponse"></div>
+    </div>
 
-
-    <div id="app-section" class="hidden">
-      <div id="quote-box">"Loading inspiration..."</div>
-
+    <div id="app-section">
       <div class="section">
         <h2>Whiteboard: Today & Tomorrow's Prep</h2>
         <form id="whiteboard-form">
@@ -140,7 +114,7 @@
         <h2>MEP: Add Recipe</h2>
         <form id="recipe-form">
           <input type="text" id="recipeName" placeholder="Recipe name">
-          <textarea id="steps" placeholder="Steps (one per line, use * for bullets, ### for sections)"></textarea>
+          <textarea id="steps" placeholder="Steps (one per line)"></textarea>
           <input type="text" id="station" placeholder="Station (e.g., Prep)" readonly>
           <button type="submit">Submit</button>
         </form>
@@ -165,8 +139,6 @@
         <h2>Cleaning Tasks</h2>
         <div id="cleaningTasks"></div>
       </div>
-
-      <button onclick="logout()">Logout</button>
     </div>
   </div>
 
@@ -175,42 +147,9 @@
     let token = localStorage.getItem('token');
     let station = localStorage.getItem('station');
 
-    if (token) {
-      showApp();
-      document.getElementById('station').value = station || 'Prep';
-      loadWhiteboard();
-      loadRecipes();
-      loadCleaningTasks();
-    }
-
     document.getElementById('whiteboard-form').addEventListener('submit', saveWhiteboard);
     document.getElementById('recipe-form').addEventListener('submit', addRecipe);
     document.getElementById('cleaning-form').addEventListener('submit', addCleaningTask);
-
-    function showApp() {
-      document.getElementById('auth-section').classList.add('hidden');
-      document.getElementById('app-section').classList.remove('hidden');
-      showQuote();
-    }
-
-    async function register() {
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-      const accessKey = document.getElementById('accessKey').value;
-      const stationInput = document.getElementById('stationInput').value;
-
-      try {
-        const res = await fetch(`${BASE_URL}/register`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password, accessKey, station: stationInput })
-        });
-        const data = await res.json();
-        alert(data.message);
-      } catch (err) {
-        alert('Registration failed: ' + err.message);
-      }
-    }
 
     async function login() {
       const username = document.getElementById('username').value;
@@ -228,7 +167,6 @@
           localStorage.setItem('station', data.station || 'Prep');
           token = data.token;
           station = data.station || 'Prep';
-          showApp();
           document.getElementById('station').value = station;
           loadWhiteboard();
           loadRecipes();
@@ -241,10 +179,27 @@
       }
     }
 
-    function logout() {
-      localStorage.clear();
-      window.location.reload();
-    }
+    document.getElementById('request-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const username = document.getElementById('requestUsername').value;
+      const station = document.getElementById('requestStation').value;
+      const note = document.getElementById('requestNote').value;
+
+      try {
+        const res = await fetch(`${BASE_URL}/request-access`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, station, note })
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Submit failed');
+        document.getElementById('requestResponse').innerText = `✅ ${data.message}`;
+        document.getElementById('request-form').reset();
+      } catch (err) {
+        document.getElementById('requestResponse').innerText = '❌ Request failed: ' + err.message;
+      }
+    });
 
     async function saveWhiteboard(e) {
       e.preventDefault();
@@ -267,28 +222,6 @@
         alert('Save whiteboard failed: ' + err.message);
       }
     }
-
-     document.getElementById('request-form').addEventListener('submit', async function (e) {
-    e.preventDefault();
-    const username = document.getElementById('requestUsername').value;
-    const station = document.getElementById('requestStation').value;
-    const note = document.getElementById('requestNote').value;
-
-    try {
-      const res = await fetch(`${BASE_URL}/request-access`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, station, note })
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Submit failed');
-      document.getElementById('requestResponse').innerText = `✅ ${data.message}`;
-      document.getElementById('request-form').reset();
-    } catch (err) {
-      document.getElementById('requestResponse').innerText = '❌ Request failed: ' + err.message;
-    }
-  });
 
     async function loadWhiteboard() {
       try {
@@ -341,7 +274,7 @@
           div.className = 'recipe';
           div.innerHTML = `
             <h3>${r.name}</h3>
-            <div class="recipe-content">${parseMarkdown(r.steps)}</div>
+            <div class="recipe-content">${r.steps.replace(/\n/g, '<br>')}</div>
             <p>Station: ${r.station || 'Not set'}</p>
             <button class="delete-btn" onclick="deleteRecipe('${r._id}')">Delete</button>
           `;
@@ -428,36 +361,6 @@
         alert('Delete task failed: ' + err.message);
       }
     }
-
-    function parseMarkdown(text) {
-      return text
-        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-        .replace(/^\* (.*$)/gm, '<li>$1</li>')
-        .replace(/\n/g, '<br>');
-    }
-
-    function showQuote() {
-      const quotes = [
-        "“Yes, chef.” — every kitchen, everywhere",
-        "“The only way to learn to cook is to cook.” — Ferran Adrià",
-        "“A recipe has no soul. You must bring soul to the recipe.” — Thomas Keller",
-        "“Clean as you go.” — Every line cook's mantra",
-      ];
-      document.getElementById('quote-box').textContent = 
-        quotes[Math.floor(Math.random() * quotes.length)];
-    }
-
-    // Login/Register field toggle behavior
-    document.getElementById('accessKey').style.display = 'none';
-    document.getElementById('stationInput').style.display = 'none';
-    document.querySelector('button[onclick="register()"]').addEventListener('click', () => {
-      document.getElementById('accessKey').style.display = 'block';
-      document.getElementById('stationInput').style.display = 'block';
-    });
-    document.querySelector('button[onclick="login()"]').addEventListener('click', () => {
-      document.getElementById('accessKey').style.display = 'none';
-      document.getElementById('stationInput').style.display = 'none';
-    });
   </script>
 </body>
 </html>
