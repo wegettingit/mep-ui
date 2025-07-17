@@ -181,27 +181,28 @@
       }
     }
 
-    document.getElementById('request-form').addEventListener('submit', async function (e) {
-      e.preventDefault();
-      const username = document.getElementById('requestUsername').value;
-      const station = document.getElementById('requestStation').value;
-      const note = document.getElementById('requestNote').value;
+  document.getElementById('request-form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  const name = document.getElementById('requestUsername').value;
+  const email = document.getElementById('requestStation').value;
+  const message = document.getElementById('requestNote').value;
 
-      try {
-        const res = await fetch(`${BASE_URL}/request-access`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, station, note })
-        });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Submit failed');
-        document.getElementById('requestResponse').innerText = `✅ ${data.message}`;
-        document.getElementById('request-form').reset();
-      } catch (err) {
-        document.getElementById('requestResponse').innerText = '❌ Request failed: ' + err.message;
-      }
+  try {
+    const res = await fetch(`${BASE_URL}/request-access`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, message })
     });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Submit failed');
+    document.getElementById('requestResponse').innerText = `✅ ${data.message}`;
+    document.getElementById('request-form').reset();
+  } catch (err) {
+    document.getElementById('requestResponse').innerText = '❌ Request failed: ' + err.message;
+  }
+});
+
 
     async function saveWhiteboard(e) {
       e.preventDefault();
