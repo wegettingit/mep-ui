@@ -147,27 +147,43 @@ document.getElementById('recipe-form').addEventListener('submit', async function
 
 async function loadRecipes() {
   try {
+    const token = localStorage.getItem('token');
+    console.log('🔑 Token:', token);
+
     const res = await fetch(`${BASE_URL}/recipes`, {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     });
+
+    console.log('📥 Response status:', res.status);
+
     const recipes = await res.json();
+    console.log('📦 Fetched recipes:', recipes);
+
     const container = document.getElementById('savedRecipes');
     container.innerHTML = '';
-    if (Array.isArray(recipes)) recipes.forEach(r => {
-      const div = document.createElement('div');
-      div.className = 'recipe';
-      div.innerHTML = `
-        <h3>${r.name}</h3>
-        <div class="recipe-content">${parseMarkdown(r.steps)}</div>
-        <p>Station: ${r.station}</p>
-        <button class="delete-btn" onclick="deleteRecipe('${r._id}')">Delete</button>
-      `;
-      container.appendChild(div);
-    });
+
+    if (Array.isArray(recipes) && recipes.length > 0) {
+      recipes.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'recipe';
+        div.innerHTML = `
+          <h3>${r.name}</h3>
+          <div>${r.steps.replace(/\n/g, '<br>')}</div>
+          <p>${r.station}</p>
+          <button class="delete-btn" onclick="deleteRecipe('${r._id}')">Delete</button>
+        `;
+        container.appendChild(div);
+      });
+    } else {
+      container.innerHTML = '<p class="text-gray-400 italic">No recipes found.</p>';
+    }
   } catch (err) {
-    console.error('Error loading recipes:', err);
+    console.error('❌ Error loading recipes:', err);
   }
 }
+
 
 async function deleteRecipe(id) {
   try {
