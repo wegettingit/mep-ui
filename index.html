@@ -100,7 +100,7 @@
       <div id="requestResponse"></div>
     </div>
 
-<div id="app-section" class="hidden">
+    <div id="app-section" class="hidden">
       <div class="section">
         <h2>Whiteboard: Today & Tomorrow's Prep</h2>
         <form id="whiteboard-form">
@@ -168,6 +168,8 @@
           token = data.token;
           station = data.station || 'Prep';
           document.getElementById('station').value = station;
+          document.getElementById('auth-section').classList.add('hidden');
+          document.getElementById('app-section').classList.remove('hidden');
           loadWhiteboard();
           loadRecipes();
           loadCleaningTasks();
