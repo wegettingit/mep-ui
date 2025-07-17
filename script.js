@@ -250,6 +250,14 @@ async function deleteCleaningTask(id) {
   }
 }
 
+window.addEventListener('DOMContentLoaded', () => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    loadRecipes();
+  }
+});
+
+
 // Simple Markdown Parser
 function parseMarkdown(text) {
   return text
