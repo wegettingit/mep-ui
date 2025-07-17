@@ -50,6 +50,7 @@ async function login() {
     if (res.ok) {
       localStorage.setItem('token', data.token);
       localStorage.setItem('station', data.station);
+      localStorage.setItem('role', data.role);
       showApp();
       loadWhiteboard();
       loadRecipes();
