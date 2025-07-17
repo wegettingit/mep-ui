@@ -168,12 +168,18 @@ async function loadRecipes() {
       recipes.forEach(r => {
         const div = document.createElement('div');
         div.className = 'recipe';
+
+        const safeSteps = r.steps ? r.steps.replace(/\n/g, '<br>') : '<i>No steps provided</i>';
+        const safeName = r.name || '<i>Unnamed Recipe</i>';
+        const safeStation = r.station || '<i>No station</i>';
+
         div.innerHTML = `
-          <h3>${r.name}</h3>
-          <div>${r.steps.replace(/\n/g, '<br>')}</div>
-          <p>${r.station}</p>
+          <h3>${safeName}</h3>
+          <div>${safeSteps}</div>
+          <p>${safeStation}</p>
           <button class="delete-btn" onclick="deleteRecipe('${r._id}')">Delete</button>
         `;
+
         container.appendChild(div);
       });
     } else {
