@@ -157,39 +157,48 @@ async function loadRecipes() {
     });
 
     console.log('📥 Response status:', res.status);
-
     const recipes = await res.json();
     console.log('📦 Fetched recipes:', recipes);
 
     const container = document.getElementById('savedRecipes');
     container.innerHTML = '';
 
-    if (Array.isArray(recipes) && recipes.length > 0) {
-      recipes.forEach(r => {
-        const div = document.createElement('div');
-        div.className = 'recipe';
-
-        const safeSteps = r.steps ? r.steps.replace(/\n/g, '<br>') : '<i>No steps provided</i>';
-        const safeName = r.name || '<i>Unnamed Recipe</i>';
-        const safeStation = r.station || '<i>No station</i>';
-
-        div.innerHTML = `
-          <h3>${safeName}</h3>
-          <div>${safeSteps}</div>
-          <p>${safeStation}</p>
-          <button class="delete-btn" onclick="deleteRecipe('${r._id}')">Delete</button>
-        `;
-
-        container.appendChild(div);
-      });
-    } else {
-      container.innerHTML = '<p class="text-gray-400 italic">No recipes found.</p>';
+    if (!Array.isArray(recipes)) {
+      console.error('❌ Recipes is not an array:', recipes);
+      container.innerHTML = '<p class="text-red-500">Error loading recipes.</p>';
+      return;
     }
+
+    if (recipes.length === 0) {
+      container.innerHTML = '<p class="text-gray-400 italic">No recipes found.</p>';
+      return;
+    }
+
+    recipes.forEach((r, i) => {
+      console.log(`🔍 Rendering recipe [${i}]`, r);
+
+      const name = r?.name || '<i>Unnamed Recipe</i>';
+      const steps = typeof r?.steps === 'string' ? r.steps.replace(/\n/g, '<br>') : '<i>No steps provided</i>';
+      const station = r?.station || '<i>No station</i>';
+
+      const div = document.createElement('div');
+      div.className = 'recipe';
+
+      div.innerHTML = `
+        <h3>${name}</h3>
+        <div>${steps}</div>
+        <p>${station}</p>
+        <button class="delete-btn" onclick="deleteRecipe('${r._id}')">Delete</button>
+      `;
+
+      container.appendChild(div);
+    });
   } catch (err) {
     console.error('❌ Error loading recipes:', err);
+    const container = document.getElementById('savedRecipes');
+    container.innerHTML = '<p class="text-red-500">Failed to load recipes. Check console for details.</p>';
   }
 }
-
 
 async function deleteRecipe(id) {
   try {
