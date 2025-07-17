@@ -110,6 +110,20 @@
       <button onclick="login()">Login</button>
     </div>
 
+    <!-- Request Access Form -->
+<div class="section" id="request-access">
+  <h2>Need Access?</h2>
+  <p>Request to join your station or kitchen crew.</p>
+  <form id="request-form">
+    <input type="text" id="requestUsername" placeholder="Your name or username" required>
+    <input type="text" id="requestStation" placeholder="Requested station (e.g., Prep)" required>
+    <textarea id="requestNote" placeholder="Anything you'd like us to know..."></textarea>
+    <button type="submit">Submit Request</button>
+  </form>
+  <div id="requestResponse"></div>
+</div>
+
+
     <div id="app-section" class="hidden">
       <div id="quote-box">"Loading inspiration..."</div>
 
@@ -253,6 +267,28 @@
         alert('Save whiteboard failed: ' + err.message);
       }
     }
+
+     document.getElementById('request-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const username = document.getElementById('requestUsername').value;
+    const station = document.getElementById('requestStation').value;
+    const note = document.getElementById('requestNote').value;
+
+    try {
+      const res = await fetch(`${BASE_URL}/request-access`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, station, note })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Submit failed');
+      document.getElementById('requestResponse').innerText = `✅ ${data.message}`;
+      document.getElementById('request-form').reset();
+    } catch (err) {
+      document.getElementById('requestResponse').innerText = '❌ Request failed: ' + err.message;
+    }
+  });
 
     async function loadWhiteboard() {
       try {
