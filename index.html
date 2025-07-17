@@ -164,6 +164,8 @@ async function login() {
     document.getElementById('station').value = station;
     document.getElementById('auth-section').classList.add('hidden');
     document.getElementById('app-section').classList.remove('hidden');
+    document.getElementById('request-access').classList.add('hidden');
+
     loadWhiteboard(); loadRecipes(); loadCleaningTasks();
   } else {
     alert(data.message || 'Login failed');
