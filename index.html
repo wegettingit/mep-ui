@@ -208,6 +208,25 @@
   }
 });
 
+      function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('station');
+    token = null;
+    station = null;
+    document.getElementById('auth-section').classList.remove('hidden');
+    document.getElementById('app-section').classList.add('hidden');
+  }
+
+    window.onload = () => {
+    if (token) {
+      document.getElementById('station').value = station || 'Prep';
+      document.getElementById('auth-section').classList.add('hidden');
+      document.getElementById('app-section').classList.remove('hidden');
+      loadWhiteboard();
+      loadRecipes();
+      loadCleaningTasks();
+    }
+  };
 
     async function saveWhiteboard(e) {
       e.preventDefault();
