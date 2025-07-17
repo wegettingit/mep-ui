@@ -157,6 +157,11 @@ async function loadRecipes() {
     });
 
     console.log('📥 Response status:', res.status);
+
+    if (!res.ok) {
+      throw new Error(`❌ Bad response from server: ${res.status}`);
+    }
+
     const recipes = await res.json();
     console.log('📦 Fetched recipes:', recipes);
 
@@ -164,8 +169,7 @@ async function loadRecipes() {
     container.innerHTML = '';
 
     if (!Array.isArray(recipes)) {
-      console.error('❌ Recipes is not an array:', recipes);
-      container.innerHTML = '<p class="text-red-500">Error loading recipes.</p>';
+      container.innerHTML = '<p class="text-red-500">Invalid recipe data.</p>';
       return;
     }
 
@@ -175,44 +179,34 @@ async function loadRecipes() {
     }
 
     recipes.forEach((r, i) => {
-      console.log(`🔍 Rendering recipe [${i}]`, r);
+      console.log(`🔍 Rendering recipe #${i}`, r);
 
-      const name = r?.name || '<i>Unnamed Recipe</i>';
-      const steps = typeof r?.steps === 'string' ? r.steps.replace(/\n/g, '<br>') : '<i>No steps provided</i>';
-      const station = r?.station || '<i>No station</i>';
+      const safeName = typeof r.name === 'string' ? r.name : 'Unnamed';
+      const safeSteps = typeof r.steps === 'string'
+        ? r.steps.replace(/\n/g, '<br>')
+        : '<i>No steps provided</i>';
+      const safeStation = typeof r.station === 'string' ? r.station : '<i>No station</i>';
 
       const div = document.createElement('div');
-      div.className = 'recipe';
+      div.className = 'bg-gray-800 text-white p-4 rounded-lg shadow-md mb-4';
 
       div.innerHTML = `
-        <h3>${name}</h3>
-        <div>${steps}</div>
-        <p>${station}</p>
-        <button class="delete-btn" onclick="deleteRecipe('${r._id}')">Delete</button>
+        <h3 class="text-lg font-bold mb-1">${safeName}</h3>
+        <div class="text-sm mb-2">${safeSteps}</div>
+        <p class="text-xs italic text-gray-400 mb-2">${safeStation}</p>
+        <button class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white text-sm" onclick="deleteRecipe('${r._id}')">Delete</button>
       `;
 
       container.appendChild(div);
     });
+
   } catch (err) {
-    console.error('❌ Error loading recipes:', err);
+    console.error('❌ loadRecipes() crashed:', err);
     const container = document.getElementById('savedRecipes');
-    container.innerHTML = '<p class="text-red-500">Failed to load recipes. Check console for details.</p>';
+    container.innerHTML = `<p class="text-red-500">Failed to load recipes: ${err.message}</p>`;
   }
 }
 
-async function deleteRecipe(id) {
-  try {
-    const res = await fetch(`${BASE_URL}/recipes/${id}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-    });
-    const data = await res.json();
-    alert(data.message);
-    loadRecipes();
-  } catch (err) {
-    alert('Delete failed');
-  }
-}
 
 // Cleaning Functions
 document.getElementById('cleaning-form').addEventListener('submit', async function (e) {
