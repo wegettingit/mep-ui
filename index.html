@@ -293,6 +293,30 @@ async function loadCleaningTasks() {
   });
 }
 
+  window.addEventListener('DOMContentLoaded', () => {
+  const savedToken = localStorage.getItem('token');
+  const savedStation = localStorage.getItem('station');
+
+  if (savedToken) {
+    token = savedToken;
+    station = savedStation || 'Prep';
+    document.getElementById('station').value = station;
+
+    // Hide login and request UI
+    document.getElementById('auth-section').classList.add('hidden');
+    document.getElementById('request-access').classList.add('hidden');
+
+    // Show the app UI
+    document.getElementById('app-section').classList.remove('hidden');
+
+    // Load user data
+    loadWhiteboard();
+    loadRecipes();
+    loadCleaningTasks();
+  }
+});
+
+
 async function deleteCleaningTask(id) {
   const res = await fetch(`${BASE_URL}/cleaning/${id}`, {
     method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
