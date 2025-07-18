@@ -289,10 +289,13 @@ async function deleteCleaningTask(id) {
 window.addEventListener('DOMContentLoaded', () => {
   const token = localStorage.getItem('token');
   if (token) {
+    loadWhiteboard();
     loadRecipes();
+    loadCleaningTasks();
+    loadAIQuote(); // Immediately fetch one on load
+    setInterval(loadAIQuote, 15000); // Repeat every 15s
   }
 });
-
 
 // Simple Markdown Parser
 function parseMarkdown(text) {
