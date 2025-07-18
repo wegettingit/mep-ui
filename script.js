@@ -102,6 +102,16 @@ document.getElementById('whiteboard-form').addEventListener('submit', async func
   }
 });
 
+async function loadAIQuote() {
+  try {
+    const res = await fetch('https://mep-api-7pph.onrender.com/ai-quote');
+    const data = await res.json();
+    document.getElementById('quoteText').textContent = data.quote;
+  } catch (err) {
+    console.error('Error fetching AI quote:', err.message);
+  }
+}
+
 async function loadWhiteboard() {
   try {
     const res = await fetch(`${BASE_URL}/whiteboard`, {
