@@ -76,6 +76,11 @@
   </style>
 </head>
 <body>
+
+<div id="quoteBox" class="well text-center" style="margin: 20px auto; max-width: 600px; font-style: italic; font-family: 'Open Sans Condensed', sans-serif; font-size: 18px;">
+  <p id="quoteText">Loading quote...</p>
+</div>
+
   <div class="container">
     <div id="auth-section" class="section">
       <h2>Login</h2>
@@ -326,6 +331,30 @@ async function deleteCleaningTask(id) {
   if (res.ok) loadCleaningTasks();
   else alert(data.message);
 }
+
+ const quotes = [
+  "Cooking is like love. It should be entered into with abandon. – Harriet Van Horne",
+  "No one is born a great cook, one learns by doing. – Julia Child",
+  "The only real stumbling block is fear of failure. In cooking, you've got to have a what-the-hell attitude. – Julia Child",
+  "If you're afraid of butter, use cream. – Julia Child",
+  "You don’t have to cook fancy or complicated masterpieces – just good food from fresh ingredients. – Julia Child",
+  "Technique is really personality. – Jacques Pépin",
+  "The more you know, the more you can create. There's no end to imagination in the kitchen. – Julia Child",
+  "A recipe has no soul. You, as the cook, must bring soul to the recipe. – Thomas Keller"
+];
+
+
+  let idx = 0;
+
+  function showNextQuote() {
+    const quoteEl = document.getElementById("quoteText");
+    quoteEl.textContent = quotes[idx];
+    idx = (idx + 1) % quotes.length;
+  }
+
+  setInterval(showNextQuote, 15000); // 15 seconds
+  showNextQuote();
+
 </script>
 </body>
 </html>
